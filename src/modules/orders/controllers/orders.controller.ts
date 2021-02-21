@@ -12,7 +12,8 @@ export class OrdersController {
   ) {}
 
   /**
-   * Função que busca as oportunidades no Pipedrive.
+   * Buscar as oportunidades com status igual a ganho no Pipedrive,
+   * depois inseri-las como pedido no Bling
    */
   @Get()
   async getDeals() {

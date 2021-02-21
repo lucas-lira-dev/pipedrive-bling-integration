@@ -1,24 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
+
+import { SetErrorService } from 'src/shared/services/set-error.service';
+
 import { PipedriveDealsResponse } from 'src/@types/IDeals';
-import { PipedriveDealsResponseDTO } from '../dtos/PipedriveDealsResponse.dto';
+
+import formPipedriveToBling from '../utils/formPipedriveToBling';
+import formJsonToXml from '../utils/formJsonToXml';
 
 @Injectable()
 export class CreateOrdersService {
-  async execute(deals: PipedriveDealsResponse) {
-    const { data } = deals;
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly errorService: SetErrorService,
+  ) {}
 
-    const orders = await data.map((data) => {
-      const items = {
-        id: data.id,
-        personName: data.person_name,
-        value: data.value,
-        title: data.title,
-        orgName: data.org_name,
-        date: data.won_time,
-      };
-      return items;
+  async execute(deals: PipedriveDealsResponse) {
+    const orders = await formPipedriveToBling(deals);
+
+    const xml = await formJsonToXml(orders);
+
+    xml.forEach(async (xml) => {
+      await this.httpService
+        .post(
+          `${process.env.BLING_BASE_URL}/pedido/json/?apikey=${process.env.BLING_API_TOKEN}&xml=${xml}`,
+          {
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded',
+            },
+          },
+        )
+        .toPromise()
+        .then(({ data }) => data)
+        .catch((error) => {
+          this.errorService.execute(error);
+        });
     });
 
-    return orders;
+    return xml;
   }
 }
