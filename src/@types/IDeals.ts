@@ -1,4 +1,4 @@
-export interface PipedriveDealsResponse {
+export interface IPipedriveDealsResponse {
   success: boolean;
   data: Datum[];
   additional_data: AdditionalData;

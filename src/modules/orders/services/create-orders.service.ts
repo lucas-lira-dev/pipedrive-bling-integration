@@ -1,8 +1,9 @@
 import { HttpService, Injectable } from '@nestjs/common';
 
 import { SetErrorService } from 'src/shared/services/set-error.service';
+import { FindOrdersService } from './find-orders.service';
 
-import { PipedriveDealsResponse } from 'src/@types/IDeals';
+import { IPipedriveDealsResponse } from 'src/@types/IDeals';
 
 import formPipedriveToBling from '../utils/formPipedriveToBling';
 import formJsonToXml from '../utils/formJsonToXml';
@@ -11,13 +12,45 @@ import formJsonToXml from '../utils/formJsonToXml';
 export class CreateOrdersService {
   constructor(
     private readonly httpService: HttpService,
-    private readonly errorService: SetErrorService,
+    private readonly setErrorService: SetErrorService,
+    private readonly findOrdersService: FindOrdersService,
   ) {}
 
-  async execute(deals: PipedriveDealsResponse) {
-    const orders = await formPipedriveToBling(deals);
+  /**
+   * Verificar se as oportunidade já foram cadastradas no Bling,
+   * as que não estirem casdastradas serão cadastradas.
+   */
+  async execute(deals: IPipedriveDealsResponse) {
+    const orders = await this.findOrdersService.execute();
 
-    const xml = await formJsonToXml(orders);
+    const formOrders = await formPipedriveToBling(deals);
+
+    let xml = null;
+
+    if (orders.retorno.erros) {
+      xml = await formJsonToXml(formOrders);
+    }
+
+    if (orders.retorno.pedidos) {
+      const requestXML = [];
+
+      let findRegister = false;
+
+      formOrders.forEach((orderXML) => {
+        findRegister = false;
+        orders.retorno.pedidos.forEach((order) => {
+          if (order.pedido.numero === orderXML.id.toString()) {
+            findRegister = true;
+          }
+        });
+
+        if (!findRegister) {
+          requestXML.push(orderXML);
+        }
+      });
+
+      xml = await formJsonToXml(requestXML);
+    }
 
     xml.forEach(async (xml) => {
       await this.httpService
@@ -32,10 +65,10 @@ export class CreateOrdersService {
         .toPromise()
         .then(({ data }) => data)
         .catch((error) => {
-          this.errorService.execute(error);
+          this.setErrorService.execute(error);
         });
     });
 
-    return xml;
+    return { response: 'Cadastros atualizados' };
   }
 }

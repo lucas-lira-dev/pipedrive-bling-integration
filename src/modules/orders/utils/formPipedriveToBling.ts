@@ -1,6 +1,6 @@
-import { PipedriveDealsResponse } from 'src/@types/IDeals';
+import { IPipedriveDealsResponse } from 'src/@types/IDeals';
 
-export default async (deals: PipedriveDealsResponse) => {
+export default async (deals: IPipedriveDealsResponse) => {
   const { data } = deals;
 
   const orders = data.map((data) => {

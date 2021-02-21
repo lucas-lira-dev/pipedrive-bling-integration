@@ -1,5 +1,5 @@
 import { HttpService, Injectable } from '@nestjs/common';
-import { PipedriveDealsResponse } from 'src/@types/IDeals';
+import { IPipedriveDealsResponse } from 'src/@types/IDeals';
 
 import { SetErrorService } from 'src/shared/services/set-error.service';
 
@@ -7,10 +7,13 @@ import { SetErrorService } from 'src/shared/services/set-error.service';
 export class GetDealsByWonService {
   constructor(
     private readonly httpService: HttpService,
-    private readonly errorService: SetErrorService,
+    private readonly setErrorService: SetErrorService,
   ) {}
 
-  async execute(): Promise<PipedriveDealsResponse> {
+  async execute(): Promise<IPipedriveDealsResponse> {
+    /**
+     * Buscar as oportunidades com status igual a ganho no Pipedrive
+     */
     const deals = await this.httpService
       .get(
         `${process.env.PIPEDRIVE_BASE_URL}/deals?status=won&start=0&api_token=${process.env.PIPEDRIVE_API_TOKEN}`,
@@ -23,7 +26,7 @@ export class GetDealsByWonService {
       .toPromise()
       .then(({ data }) => data)
       .catch((error) => {
-        this.errorService.execute(error);
+        this.setErrorService.execute(error);
       });
 
     return deals;
