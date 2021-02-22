@@ -69,6 +69,6 @@ export class CreateOrdersService {
         });
     });
 
-    return { response: 'Cadastros atualizados' };
+    return { response: 'Pedidos cadastrados' };
   }
 }
