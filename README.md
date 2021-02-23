@@ -13,7 +13,7 @@
 ## Project
 
 RESTful API using NodeJS technology.
-Using the SOLID and TDD development standards<br /><br />
+Using SOLID development standards<br /><br />
 
 ## Requirements
 
@@ -67,4 +67,12 @@ $ yarn start:dev
 $ npm run start:prod
 or
 $ yarn start
+```
+### Docker
+```bash
+# build image
+$ docker build -t pipedrive-bling-integration .
+
+# create container
+$ docker run -d --name api-pipedrive-bling-integration -p 3000:3000 pipedrive-bling-integration
 ```
