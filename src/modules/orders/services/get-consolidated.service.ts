@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import IOrderRepository from '../repositories/IOrderRepository';
+import IConsolidatedRepository from '../repositories/IConsolidatedRepository';
 
 @Injectable()
 export class GetConsolidatedService {
   constructor(
     @Inject('OrderRepositoryMongoose')
-    private readonly orderRepository: IOrderRepository,
+    private readonly orderRepository: IConsolidatedRepository,
   ) {}
 
   async execute() {

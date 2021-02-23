@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 @Schema()
-export class Order extends Document {
+export class Consolidated extends Document {
   @Prop()
   date: string;
 
@@ -9,4 +9,4 @@ export class Order extends Document {
   valueTotal: number;
 }
 
-export const OrderSchema = SchemaFactory.createForClass(Order);
+export const OrderSchema = SchemaFactory.createForClass(Consolidated);

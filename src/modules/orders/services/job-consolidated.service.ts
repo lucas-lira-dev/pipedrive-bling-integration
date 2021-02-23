@@ -1,17 +1,26 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 
 import { FindOrdersService } from './find-orders.service';
 
-import IOrderRepository from '../repositories/IOrderRepository';
+import IConsolidatedRepository from '../repositories/IConsolidatedRepository';
 
 @Injectable()
-export class SaveConsolidatedService {
+export class JobConsolidatedService {
   constructor(
     @Inject('OrderRepositoryMongoose')
-    private readonly orderRepository: IOrderRepository,
+    private readonly orderRepository: IConsolidatedRepository,
     private readonly findOrdersService: FindOrdersService,
   ) {}
 
+  /**
+   * Job a ser executado uma vez por dia as 12am
+   */
+  @Cron('0 0 12 * * *')
+  /**
+   * Pegar os pedidos cadastradas no Bling, filtrar pelo dia atual
+   * e enviar os dados para cadastrar no mongoDB
+   */
   async execute() {
     const orders = await this.findOrdersService.execute();
 

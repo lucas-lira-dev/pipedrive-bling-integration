@@ -6,23 +6,28 @@ import { OrdersController } from './controllers/orders.controller';
 import { GetDealsByWonService } from './services/get-deals-by-won.service';
 import { FindOrdersService } from './services/find-orders.service';
 import { CreateOrdersService } from './services/create-orders.service';
-import { SaveConsolidatedService } from './services/save-consolidated.service';
+import { JobConsolidatedService } from './services/job-consolidated.service';
 
-import { Order, OrderSchema } from './infra/mongoose/models/orders';
-import { OrderRepositoryMongoose } from './infra/mongoose/repositories/orderRepository';
+import {
+  Consolidated,
+  OrderSchema,
+} from './infra/mongoose/models/consolidated';
+import { OrderRepositoryMongoose } from './infra/mongoose/repositories/consolidatedRepository';
 import { GetConsolidatedService } from './services/get-consolidated.service';
 
 @Module({
   imports: [
     HttpModule,
-    MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+    MongooseModule.forFeature([
+      { name: Consolidated.name, schema: OrderSchema },
+    ]),
   ],
   controllers: [OrdersController],
   providers: [
     GetDealsByWonService,
     FindOrdersService,
     CreateOrdersService,
-    SaveConsolidatedService,
+    JobConsolidatedService,
     OrderRepositoryMongoose,
     GetConsolidatedService,
   ],
